@@ -8,7 +8,7 @@ Single Markdown file holding my solutions for Advent of Code
 #### The code
 ```Kotlin
 
-val input =
+const val input =
 """
 R22
 L2
