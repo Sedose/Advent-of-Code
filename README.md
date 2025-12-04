@@ -3,6 +3,20 @@ Single Markdown file holding my solutions for Advent of Code
 
 ## 2025
 
+## **Style**
+* **Pipeline programming**
+* **Data-oriented programming**
+* **Functional-like programming**
+* **Declarative-like programming**
+* **Side-effect isolation** (I/O only in `main`)
+* **Expression-oriented Kotlin**
+* **Structured, composable functions**
+* **No mutable global state**
+* **Pure functions**
+* **Minimal branching, maximal transformation**
+* **Clean, predictable control flow**
+* **Lean functional patterns**
+
 ### Day 1. Part 1
 
 #### The code
@@ -51,16 +65,52 @@ fun parseMoveDelta(text: String): Int {
 }
 ```
 
-#### **Style**
-* **Pipeline programming**
-* **Data-oriented programming**
-* **Functional-like programming**
-* **Declarative-like programming**
-* **Side-effect isolation** (I/O only in `main`)
-* **Expression-oriented Kotlin**
-* **Structured, composable functions**
-* **No mutable global state**
-* **Pure functions**
-* **Minimal branching, maximal transformation**
-* **Clean, predictable control flow**
-* **Lean functional patterns**
+### Day 1. Part 2
+
+#### The code
+```Kotlin
+const val input =
+"""
+R22
+L2
+R13
+L49
+...
+L7
+L12
+L35
+R50
+""".trimIndent()
+    .lines()
+    .map(String::trim)
+    .filter(String::isNotEmpty)
+
+const val dialUpperBound = 100
+
+const val initialPosition = 50
+
+fun main() {
+    input.let(::calculatePassword)
+        .let(::println)
+}
+
+fun calculatePassword(input: List<String>): Int =
+    input.asSequence()
+        .flatMap(::parseClicks)
+        .scan(initialPosition) { position, delta ->
+            (position + delta).mod(dialUpperBound)
+        }
+        .count { it == 0 }
+
+
+fun parseClicks(text: String): Sequence<Int> {
+    val direction =
+        when (text.first()) {
+            'L' -> -1
+            'R' -> 1
+            else -> error("Unexpected move instruction")
+        }
+    val amount = text.drop(1).toInt()
+    return generateSequence { direction }.take(amount)
+}
+```
