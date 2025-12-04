@@ -5,6 +5,7 @@ Single Markdown file holding my solutions for Advent of Code
 
 ### Day 1. Part 1
 
+#### The code
 ```Kotlin
 
 val input =
@@ -49,3 +50,14 @@ fun parseMoveDelta(text: String): Int {
     }
 }
 ```
+
+#### **Style**
+
+* **Side-effect isolation** (I/O only in `main`)
+* **Expression-oriented Kotlin**
+* **Structured, composable functions**
+* **No mutable global state**
+* **Pure functions**
+* **Minimal branching, maximal transformation**
+* **Clean, predictable control flow**
+* **Lean functional patterns**
