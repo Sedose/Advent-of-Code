@@ -52,7 +52,10 @@ fun parseMoveDelta(text: String): Int {
 ```
 
 #### **Style**
-
+* **Pipeline programming**
+* **Data-oriented programming**
+* **Functional-like programming**
+* **Declarative-like programming**
 * **Side-effect isolation** (I/O only in `main`)
 * **Expression-oriented Kotlin**
 * **Structured, composable functions**
