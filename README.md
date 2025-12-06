@@ -3,7 +3,7 @@ Single Markdown file holding my solutions for Advent of Code
 
 ## 2025
 
-## **Style**
+## **Programming style, code characteristics**
 * **Pipeline programming**
 * **Data-oriented programming**
 * **Functional-like programming**
@@ -16,6 +16,9 @@ Single Markdown file holding my solutions for Advent of Code
 * **Minimal branching, maximal transformation**
 * **Clean, predictable control flow**
 * **Lean functional patterns**
+* **Less code means better. Code is dense**
+* **The code is not opimized to gain maximum raw speed**
+* **The code is opimized for correctness, simplicity and clarity**
 
 ### Day 1. Part 1
 
