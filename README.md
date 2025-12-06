@@ -20,6 +20,7 @@ Single Markdown file holding my solutions for Advent of Code
 * **Less code means better. Code is dense**
 * **The code is not opimized to gain maximum raw speed**
 * **The code is opimized for correctness, simplicity and clarity**
+* **The code is like do 1, do 2, do 3, get result, without bullshit**
 
 ### Day 1. Part 1
 
