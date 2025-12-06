@@ -19,8 +19,9 @@ Single Markdown file holding my solutions for Advent of Code
 * **Lean functional patterns**
 * **Less code means better. Code is dense**
 * **The code is not opimized to gain maximum raw speed**
+* **The code is kept vertical, so it stays within a regular monitor size, no need for endless zooming, scroling nonsense**
 * **The code is opimized for correctness, simplicity and clarity**
-* **The code is like do 1, do 2, do 3, get result, without bullshit**
+* **The code is like do 1, do 2, do 3, get result, without stupid or smart nonsense**
 
 ### Day 1. Part 1
 
