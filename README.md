@@ -162,14 +162,6 @@ fun main() {
 
 fun isInvalidId(id: Long): Boolean {
     val id = id.toString()
-    for (subLen in 1..id.length / 2) {
-        if (id.length % subLen == 0) {
-            val substring = id.take(subLen)
-            if (id == substring.repeat(id.length / subLen)) {
-                return true
-            }
-        }
-    }
-    return false
+    return id in (id + id).drop(1).dropLast(1)
 }
 ```
