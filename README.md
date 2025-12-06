@@ -143,3 +143,33 @@ fun isInvalidId(id: Long): Boolean {
     return id.take(halfLength) == id.drop(halfLength)
 }
 ```
+
+### Day 2. Part 1
+
+#### The code
+```Kotlin
+fun main() {
+    input.splitToSequence(",")
+        .map { rawRange -> rawRange.split("-") }
+        .map { (startInclusive, endInclusive) ->
+            startInclusive.toLong()..endInclusive.toLong()
+        }
+        .flatMap { it.asSequence() }
+        .filter(::isInvalidId)
+        .sum()
+        .let(::println)
+}
+
+fun isInvalidId(id: Long): Boolean {
+    val id = id.toString()
+    for (subLen in 1..id.length / 2) {
+        if (id.length % subLen == 0) {
+            val substring = id.take(subLen)
+            if (id == substring.repeat(id.length / subLen)) {
+                return true
+            }
+        }
+    }
+    return false
+}
+```
