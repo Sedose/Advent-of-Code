@@ -119,7 +119,6 @@ fun parseClicks(text: String): Sequence<Int> {
 
 #### The code
 ```Kotlin
-
 fun main() {
     input.splitToSequence(",")
         .map { rawRange -> rawRange.split("-") }
@@ -132,10 +131,9 @@ fun main() {
         .let(::println)
 }
 
-fun isInvalidId(id: Long): Boolean =
-    id.toString()
-        .let { digits ->
-            val halfLength = digits.length / 2
-            digits.take(halfLength) == digits.drop(halfLength)
-        }
+fun isInvalidId(id: Long): Boolean {
+    val id = id.toString()
+    val halfLength = id.length / 2
+    return id.take(halfLength) == id.drop(halfLength)
+}
 ```
