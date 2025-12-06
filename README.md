@@ -9,7 +9,7 @@ Single Markdown file holding my solutions for Advent of Code
 * **Functional-like programming**
 * **Declarative-like programming**
 * **Side-effect isolation** (I/O only in `main`)
-* **Expression-oriented Kotlin**
+* **Expression-oriented programming**
 * **Structured, composable functions**
 * **No mutable global state**
 * **Prefer not to have even local mutable state unless absolutely needed to gain smth more valuable**
