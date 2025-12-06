@@ -114,3 +114,32 @@ fun parseClicks(text: String): Sequence<Int> {
     return generateSequence { direction }.take(amount)
 }
 ```
+
+### Day 2. Part 1
+
+#### The code
+```Kotlin
+val input =
+"""
+328412-412772,1610-2974,163-270,...,9786096-9876355,53488585-53570896
+""".trimIndent()
+
+fun main() {
+    input.splitToSequence(",")
+        .map { rawRange -> rawRange.split("-") }
+        .map { (startInclusive, endInclusive) ->
+            startInclusive.toLong()..endInclusive.toLong()
+        }
+        .flatMap{ it.asSequence() }
+        .filter(::isInvalidId)
+        .sum()
+        .let(::println)
+}
+
+fun isInvalidId(id: Long): Boolean =
+    id.toString()
+        .let { digits ->
+            val halfLength = digits.length / 2
+            digits.take(halfLength) == digits.drop(halfLength)
+        }
+```
