@@ -144,7 +144,7 @@ fun isInvalidId(id: Long): Boolean {
 }
 ```
 
-### Day 2. Part 1
+### Day 2. Part 2
 
 #### The code
 ```Kotlin
