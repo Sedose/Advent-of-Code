@@ -3,7 +3,7 @@ Single Markdown file holding my solutions for Advent of Code
 
 ## 2025
 
-## **Programming style, code characteristics**
+## **Programming style, code characteristics, philosophy**
 * **Pipeline programming**
 * **Data-oriented programming**
 * **Functional-like programming**
