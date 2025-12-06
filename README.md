@@ -119,10 +119,6 @@ fun parseClicks(text: String): Sequence<Int> {
 
 #### The code
 ```Kotlin
-val input =
-"""
-328412-412772,1610-2974,163-270,...,9786096-9876355,53488585-53570896
-""".trimIndent()
 
 fun main() {
     input.splitToSequence(",")
@@ -130,7 +126,7 @@ fun main() {
         .map { (startInclusive, endInclusive) ->
             startInclusive.toLong()..endInclusive.toLong()
         }
-        .flatMap{ it.asSequence() }
+        .flatMap { it.asSequence() }
         .filter(::isInvalidId)
         .sum()
         .let(::println)
