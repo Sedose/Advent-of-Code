@@ -12,6 +12,7 @@ Single Markdown file holding my solutions for Advent of Code
 * **Expression-oriented Kotlin**
 * **Structured, composable functions**
 * **No mutable global state**
+* **Prefer not to have even local mutable state unless absolutely needed to gain smth more valuable**
 * **Pure functions**
 * **Minimal branching, maximal transformation**
 * **Clean, predictable control flow**
