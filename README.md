@@ -169,7 +169,7 @@ fun isInvalidId(id: Long): Boolean {
 ### Day 3. Part 1
 
 #### The code
-```
+```Kotlin
 fun main() {
     input.lineSequence()
         .sumOf(::maximumTwoDigitValue)
