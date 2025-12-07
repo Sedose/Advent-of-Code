@@ -165,3 +165,22 @@ fun isInvalidId(id: Long): Boolean {
     return id in (id + id).drop(1).dropLast(1)
 }
 ```
+
+### Day 3. Part 1
+
+#### The code
+```
+fun main() {
+    input.lineSequence()
+        .sumOf(::maximumTwoDigitValue)
+        .let(::println)
+}
+
+fun maximumTwoDigitValue(bank: String): Int {
+    val numbers = bank.map { it.digitToInt() }
+    val firstMax = numbers.dropLast(1).max()
+    val indexOfFirstMax = numbers.indexOf(firstMax)
+    val secondMax = numbers.drop(indexOfFirstMax + 1).max()
+    return firstMax * 10 + secondMax
+}
+```
