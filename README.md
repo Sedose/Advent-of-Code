@@ -71,7 +71,7 @@ fun parseMoveDelta(text: String): Int {
 }
 ```
 
-```
+```Gleam
 """
 R22
 L2
