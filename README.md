@@ -71,6 +71,59 @@ fun parseMoveDelta(text: String): Int {
 }
 ```
 
+```
+"""
+R22
+L2
+R13
+L49
+...
+L7
+L12
+L35
+R50
+"""
+
+pub fn main() {
+  input
+  |> string.split("\n")
+  |> list.map(string.trim)
+  |> list.filter(fn(s) { s != "" })
+  |> calculate_password
+  |> int.to_string
+  |> io.println
+}
+
+const dial_upper_bound = 100
+
+fn calculate_password(input: List(String)) -> Int {
+  input
+  |> list.map(parse_move_delta)
+  |> list.scan(50, next_position)
+  |> list.count(fn(pos) { pos == 0 })
+}
+
+fn next_position(position, delta) -> Int {
+  let new_pos = position + delta
+  new_pos % dial_upper_bound
+}
+
+fn parse_move_delta(text: String) -> Int {
+  let direction = string.first(text) |> result.unwrap("")
+  let amount =
+    text
+    |> string.drop_start(1)
+    |> int.parse
+    |> result.unwrap(0)
+
+  case direction {
+    "L" -> -amount
+    "R" -> amount
+    _ -> 0
+  }
+}
+```
+
 ### Day 1. Part 2
 
 #### The code
