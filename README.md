@@ -77,7 +77,7 @@ fun parseMoveDelta(text: String): Int {
 ##### Gleam
 
 ```Gleam
-"""
+const input = "
 R22
 L2
 R13
@@ -87,7 +87,7 @@ L7
 L12
 L35
 R50
-"""
+"
 
 pub fn main() {
   input
@@ -184,6 +184,18 @@ fun parseClicks(text: String): Sequence<Int> {
 ##### Gleam
 
 ```Gleam
+
+const input = "
+R22
+L2
+R13
+L49
+...
+L7
+L12
+L35
+R50
+"
 
 const dial_upper_bound = 100
 
