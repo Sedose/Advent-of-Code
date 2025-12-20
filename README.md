@@ -133,13 +133,21 @@ fn parse_move_delta(text: String) -> Int {
 ```Rust
 use std::ops::Not;
 
-mod input;
+pub const INPUT: &str = r#"
+R22
+R26
+L20
+R20
+---
+L12
+L35
+R50
+"#;
 
 const DIAL_UPPER_BOUND: i32 = 100;
 
 fn main() {
-    let password = input::INPUT
-        .lines()
+    let password = INPUT.lines()
         .map(str::trim)
         .filter(|line| line.is_empty().not())
         .map(parse_move_delta)
