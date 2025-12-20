@@ -128,6 +128,43 @@ fn parse_move_delta(text: String) -> Int {
 }
 ```
 
+##### Rust
+
+```Rust
+use std::ops::Not;
+
+mod input;
+
+const DIAL_UPPER_BOUND: i32 = 100;
+
+fn main() {
+    let password = input::INPUT
+        .lines()
+        .map(str::trim)
+        .filter(|line| line.is_empty().not())
+        .map(parse_move_delta)
+        .scan(50, |position, delta| {
+            *position = (*position + delta).rem_euclid(DIAL_UPPER_BOUND);
+            Some(*position)
+        })
+        .filter(|position| *position == 0)
+        .count();
+
+    println!("{password}");
+}
+
+fn parse_move_delta(text: &str) -> i32 {
+    let (direction, amount_text) = text.split_at(1);
+    let amount: i32 = amount_text.parse().unwrap();
+
+    match direction {
+        "L" => -amount,
+        "R" => amount,
+        _ => 0,
+    }
+}
+```
+
 ### Day 1. Part 2
 
 #### The code
