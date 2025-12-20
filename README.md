@@ -26,6 +26,9 @@ Single Markdown file holding my solutions for Advent of Code
 ### Day 1. Part 1
 
 #### The code
+
+##### Kotlin
+
 ```Kotlin
 
 const val input =
@@ -70,6 +73,8 @@ fun parseMoveDelta(text: String): Int {
     }
 }
 ```
+
+##### Gleam
 
 ```Gleam
 """
@@ -126,6 +131,9 @@ fn parse_move_delta(text: String) -> Int {
 ### Day 1. Part 2
 
 #### The code
+
+##### Kotlin
+
 ```Kotlin
 const val input =
 """
@@ -170,6 +178,49 @@ fun parseClicks(text: String): Sequence<Int> {
         }
     val amount = text.drop(1).toInt()
     return generateSequence { direction }.take(amount)
+}
+```
+
+##### Gleam
+
+```Gleam
+
+const dial_upper_bound = 100
+
+const dial_initial_position = 50
+
+pub fn main() {
+  input
+  |> string.split("\n")
+  |> list.map(string.trim)
+  |> list.filter(fn(line) { !string.is_empty(line) })
+  |> calculate_password
+  |> int.to_string
+  |> io.println
+}
+
+fn calculate_password(input: List(String)) -> Int {
+  input
+  |> list.flat_map(parse_clicks)
+  |> list.scan(dial_initial_position, next_position)
+  |> list.count(fn(pos) { pos == 0 })
+}
+
+fn next_position(position, delta) -> Int {
+  let new_pos = position + delta
+  new_pos % dial_upper_bound
+}
+
+fn parse_clicks(line: String) -> List(Int) {
+  let direction = case string.first(line) {
+    Ok("L") -> -1
+    Ok("R") -> 1
+    _ -> 0
+  }
+
+  let amount = string.drop_start(line, 1) |> int.parse |> result.unwrap(0)
+
+  list.repeat(direction, amount)
 }
 ```
 
