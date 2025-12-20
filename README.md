@@ -109,17 +109,16 @@ fn next_position(position, delta) -> Int {
 }
 
 fn parse_move_delta(text: String) -> Int {
-  let direction = string.first(text) |> result.unwrap("")
-  let amount =
+  let amount = 
     text
     |> string.drop_start(1)
     |> int.parse
     |> result.unwrap(0)
-
-  case direction {
-    "L" -> -amount
-    "R" -> amount
-    _ -> 0
+  
+  case string.first(text) {
+    Ok("L") -> -amount
+    Ok("R") -> amount
+    _ -> panic as "Unexpected move instruction"
   }
 }
 ```
