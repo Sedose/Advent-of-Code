@@ -281,6 +281,56 @@ fn parse_clicks(line: String) -> List(Int) {
 }
 ```
 
+##### Rust
+
+```Rust
+use std::iter::repeat;
+use std::ops::Not;
+
+pub const INPUT: &str = r#"
+R22
+R26
+L20
+R20
+---
+L12
+L35
+R50
+"#;
+
+const DIAL_UPPER_BOUND: i32 = 100;
+const INITIAL_POSITION: i32 = 50;
+
+fn main() {
+    let password = INPUT
+        .lines()
+        .map(str::trim)
+        .filter(|line| line.is_empty().not())
+        .flat_map(parse_move_deltas)
+        .scan(INITIAL_POSITION, |position, delta| {
+            *position = (*position + delta).rem_euclid(DIAL_UPPER_BOUND);
+            Some(*position)
+        })
+        .filter(|position| *position == 0)
+        .count();
+
+    println!("{password}");
+}
+
+fn parse_move_deltas(text: &str) -> impl Iterator<Item = i32> {
+    let (direction_text, amount_text) = text.split_at(1);
+    let amount = amount_text.parse().unwrap();
+
+    let direction = match direction_text {
+        "L" => -1,
+        "R" => 1,
+        _ => 0,
+    };
+
+    repeat(direction).take(amount)
+}
+```
+
 ### Day 2. Part 1
 
 #### The code
