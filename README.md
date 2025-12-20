@@ -163,7 +163,7 @@ fn main() {
 
 fn parse_move_delta(text: &str) -> i32 {
     let (direction, amount_text) = text.split_at(1);
-    let amount: i32 = amount_text.parse().unwrap();
+    let amount: i32 = amount_text.parse().unwrap_or(0);
 
     match direction {
         "L" => -amount,
@@ -319,7 +319,7 @@ fn main() {
 
 fn parse_move_deltas(text: &str) -> impl Iterator<Item = i32> {
     let (direction_text, amount_text) = text.split_at(1);
-    let amount = amount_text.parse().unwrap();
+    let amount = amount_text.parse().unwrap_or(0);
 
     let direction = match direction_text {
         "L" => -1,
