@@ -1,8 +1,6 @@
 # Advent-of-Code
+
 Single Markdown file holding my solutions for Advent of Code
-
-## 2025
-
 ## **Programming style, code characteristics, philosophy**
 * **Pipeline programming**
 * **Data-oriented programming**
@@ -22,6 +20,8 @@ Single Markdown file holding my solutions for Advent of Code
 * **The code is kept vertical, so it stays within a regular monitor size, no need for endless zooming, scroling nonsense**
 * **The code is opimized for correctness, simplicity and clarity**
 * **The code is like do 1, do 2, do 3, get result, without stupid or smart nonsense**
+
+## 2025
 
 ### Day 1. Part 1
 
