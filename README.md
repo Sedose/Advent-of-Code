@@ -30,38 +30,25 @@ Single Markdown file holding my solutions for Advent of Code
 ##### Kotlin
 
 ```Kotlin
-const val input =
-"""
-R22
-L2
-R13
-L49
-...
-L7
-L12
-L35
-R50
-"""
+package org.example
+
+private const val DIAL_UPPER_BOUND = 100
 
 fun main() {
-    input.trimIndent()
-        .lines()
+    (
+        object {}.javaClass
+            .getResource("/day1_part1.txt")
+            ?.readText()
+            ?: error("Resource not found")
+        )
+        .lineSequence()
         .map(String::trim)
         .filter(String::isNotEmpty)
-        .let(::calculatePassword)
+        .map(::parseMoveDelta)
+        .scan(50, ::nextPosition)
+        .count { it == 0 }
         .let(::println)
 }
-
-const val dialUpperBound = 100
-
-fun calculatePassword(input: List<String>): Int =
-    input.map(::parseMoveDelta)
-        .scan(50) { position, delta ->
-            // Forces position to stay within [`start`, `end`] range
-            // which represents a closed dial
-            (position + delta).mod(dialUpperBound)
-        }
-        .count(0::equals)
 
 fun parseMoveDelta(text: String): Int {
     val amount = text.drop(1).toInt()
@@ -69,6 +56,127 @@ fun parseMoveDelta(text: String): Int {
         'L' -> -amount
         'R' -> amount
         else -> error("Unexpected move instruction")
+    }
+}
+
+fun nextPosition(position: Int, delta: Int): Int =
+    (position + delta).mod(DIAL_UPPER_BOUND)
+```
+
+##### Scala
+
+```Scala
+import scala.io.Source
+import scala.util.Using
+import scala.util.chaining.scalaUtilChainingOps
+
+private val DIAL_UPPER_BOUND = 100
+
+@main def main(): Unit =
+  Using.resource(Source.fromResource("day1_part1.txt"))(_.mkString)
+    .linesIterator
+    .map(_.trim)
+    .filter(_.nonEmpty)
+    .map(parseMoveDelta)
+    .scanLeft(50)(nextPosition)
+    .count(_ == 0)
+    .pipe(println)
+
+def parseMoveDelta(text: String): Int =
+  val amount = text.drop(1).toInt
+  text.head match
+    case 'L' => -amount
+    case 'R' => amount
+    case _ => 1
+
+def nextPosition(position: Int, delta: Int): Int =
+  Math.floorMod(position + delta, DIAL_UPPER_BOUND)
+```
+
+##### Java
+
+```Java
+import static com.example.Input.INPUT;
+
+record DialState(int position, int zeroHits) {}
+
+void main() {
+
+    int dialUpperBound = 100;
+
+    int password =
+        INPUT.stripIndent()
+            .lines()
+            .map(String::trim)
+            .filter(line -> !line.isEmpty())
+            .map(this::parseMoveDelta)
+            .reduce(
+                new DialState(50, 0),
+                (state, delta) -> nextDialState(state, delta, dialUpperBound),
+                (_, right) -> right
+            )
+            .zeroHits();
+
+    IO.println(password);
+}
+
+private int parseMoveDelta(String text) {
+    int amount = Integer.parseInt(text.substring(1));
+    return switch (text.charAt(0)) {
+        case 'L' -> -amount;
+        case 'R' -> amount;
+        default -> 0;
+    };
+}
+
+private DialState nextDialState(DialState state, int delta, int dialUpperBound) {
+    int position = Math.floorMod(state.position() + delta, dialUpperBound);
+    int zeroHits = state.zeroHits() + (position == 0 ? 1 : 0);
+    return new DialState(position, zeroHits);
+}
+```
+
+##### Rust
+
+```Rust
+use std::ops::Not;
+
+pub const INPUT: &str = r#"
+R22
+R26
+L20
+R20
+---
+L12
+L35
+R50
+"#;
+
+const DIAL_UPPER_BOUND: i32 = 100;
+
+fn main() {
+    let password = INPUT.lines()
+        .map(str::trim)
+        .filter(|line| line.is_empty().not())
+        .map(parse_move_delta)
+        .scan(50, |position, delta| {
+            *position = (*position + delta).rem_euclid(DIAL_UPPER_BOUND);
+            Some(*position)
+        })
+        .filter(|position| *position == 0)
+        .count();
+
+    println!("{password}");
+}
+
+fn parse_move_delta(text: &str) -> i32 {
+    let (direction, amount_text) = text.split_at(1);
+    let amount: i32 = amount_text.parse().unwrap_or(0);
+
+    match direction {
+        "L" => -amount,
+        "R" => amount,
+        _ => 0,
     }
 }
 ```
@@ -125,123 +233,6 @@ fn parse_move_delta(text: String) -> Int {
     _ -> panic as "Unexpected move instruction"
   }
 }
-```
-
-##### Rust
-
-```Rust
-use std::ops::Not;
-
-pub const INPUT: &str = r#"
-R22
-R26
-L20
-R20
----
-L12
-L35
-R50
-"#;
-
-const DIAL_UPPER_BOUND: i32 = 100;
-
-fn main() {
-    let password = INPUT.lines()
-        .map(str::trim)
-        .filter(|line| line.is_empty().not())
-        .map(parse_move_delta)
-        .scan(50, |position, delta| {
-            *position = (*position + delta).rem_euclid(DIAL_UPPER_BOUND);
-            Some(*position)
-        })
-        .filter(|position| *position == 0)
-        .count();
-
-    println!("{password}");
-}
-
-fn parse_move_delta(text: &str) -> i32 {
-    let (direction, amount_text) = text.split_at(1);
-    let amount: i32 = amount_text.parse().unwrap_or(0);
-
-    match direction {
-        "L" => -amount,
-        "R" => amount,
-        _ => 0,
-    }
-}
-```
-
-##### Java
-
-```Java
-import static com.example.Input.INPUT;
-
-record DialState(int position, int zeroHits) {}
-
-void main() {
-
-    int dialUpperBound = 100;
-
-    int password =
-        INPUT.stripIndent()
-            .lines()
-            .map(String::trim)
-            .filter(line -> !line.isEmpty())
-            .map(this::parseMoveDelta)
-            .reduce(
-                new DialState(50, 0),
-                (state, delta) -> nextDialState(state, delta, dialUpperBound),
-                (_, right) -> right
-            )
-            .zeroHits();
-
-    IO.println(password);
-}
-
-private int parseMoveDelta(String text) {
-    int amount = Integer.parseInt(text.substring(1));
-    return switch (text.charAt(0)) {
-        case 'L' -> -amount;
-        case 'R' -> amount;
-        default -> 0;
-    };
-}
-
-private DialState nextDialState(DialState state, int delta, int dialUpperBound) {
-    int position = Math.floorMod(state.position() + delta, dialUpperBound);
-    int zeroHits = state.zeroHits() + (position == 0 ? 1 : 0);
-    return new DialState(position, zeroHits);
-}
-```
-
-##### Scala
-```Scala
-import scala.io.Source
-import scala.util.Using
-import scala.util.chaining.scalaUtilChainingOps
-
-private val DIAL_UPPER_BOUND = 100
-
-@main def main(): Unit =
-  Using.resource(Source.fromResource("day1_part1.txt"))(_.mkString)
-    .linesIterator
-    .map(_.trim)
-    .filter(_.nonEmpty)
-    .map(parseMoveDelta)
-    .scanLeft(50)(nextPosition)
-    .count(_ == 0)
-    .pipe(println)
-
-def parseMoveDelta(text: String): Int =
-  val amount = text.drop(1).toInt
-  text.head match
-    case 'L' => -amount
-    case 'R' => amount
-    case _ => 1
-
-def nextPosition(position: Int, delta: Int): Int =
-  Math.floorMod(position + delta, DIAL_UPPER_BOUND)
 ```
 
 
