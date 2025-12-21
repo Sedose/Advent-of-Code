@@ -11,6 +11,7 @@ Single Markdown file holding my solutions for Advent of Code
 * **Structured, composable functions**
 * **No mutable global state**
 * **Prefer not to have even local mutable state unless absolutely needed to gain smth much more valuable**
+* **Prefer not to have explicit `source code`-level loops unless absolutely needed to gain smth much more valuable**
 * **Pure functions**
 * **Minimal branching, maximal transformation**
 * **Clean, predictable control flow**
