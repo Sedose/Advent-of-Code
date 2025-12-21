@@ -30,7 +30,6 @@ Single Markdown file holding my solutions for Advent of Code
 ##### Kotlin
 
 ```Kotlin
-
 const val input =
 """
 R22
@@ -215,6 +214,37 @@ private DialState nextDialState(DialState state, int delta, int dialUpperBound) 
     return new DialState(position, zeroHits);
 }
 ```
+
+##### Scala
+```Scala
+import scala.io.Source
+import scala.util.Using
+import scala.util.chaining.scalaUtilChainingOps
+
+private val DIAL_UPPER_BOUND = 100
+
+@main def main(): Unit =
+  Using.resource(Source.fromResource("day1_part1.txt"))(_.mkString)
+    .linesIterator
+    .map(_.trim)
+    .filter(_.nonEmpty)
+    .map(parseMoveDelta)
+    .scanLeft(50)(nextPosition)
+    .count(_ == 0)
+    .pipe(println)
+
+def parseMoveDelta(text: String): Int =
+  val amount = text.drop(1).toInt
+  text.head match
+    case 'L' => -amount
+    case 'R' => amount
+    case _ => 1
+
+def nextPosition(position: Int, delta: Int): Int =
+  Math.floorMod(position + delta, DIAL_UPPER_BOUND)
+```
+
+
 
 ### Day 1. Part 2
 
