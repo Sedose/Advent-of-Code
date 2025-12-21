@@ -173,6 +173,49 @@ fn parse_move_delta(text: &str) -> i32 {
 }
 ```
 
+##### Java
+
+```Java
+import static com.example.Input.INPUT;
+
+record DialState(int position, int zeroHits) {}
+
+void main() {
+
+    int dialUpperBound = 100;
+
+    int password =
+        INPUT.stripIndent()
+            .lines()
+            .map(String::trim)
+            .filter(line -> !line.isEmpty())
+            .map(this::parseMoveDelta)
+            .reduce(
+                new DialState(50, 0),
+                (state, delta) -> nextDialState(state, delta, dialUpperBound),
+                (_, right) -> right
+            )
+            .zeroHits();
+
+    IO.println(password);
+}
+
+private int parseMoveDelta(String text) {
+    int amount = Integer.parseInt(text.substring(1));
+    return switch (text.charAt(0)) {
+        case 'L' -> -amount;
+        case 'R' -> amount;
+        default -> 0;
+    };
+}
+
+private DialState nextDialState(DialState state, int delta, int dialUpperBound) {
+    int position = Math.floorMod(state.position() + delta, dialUpperBound);
+    int zeroHits = state.zeroHits() + (position == 0 ? 1 : 0);
+    return new DialState(position, zeroHits);
+}
+```
+
 ### Day 1. Part 2
 
 #### The code
