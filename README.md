@@ -55,7 +55,7 @@ fun parseMoveDelta(text: String): Int {
     return when (text.first()) {
         'L' -> -amount
         'R' -> amount
-        else -> error("Unexpected move instruction")
+        else -> 0
     }
 }
 
