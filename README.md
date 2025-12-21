@@ -224,7 +224,7 @@ fn parse_move_delta(text: String) -> Int {
   case string.first(text) {
     Ok("L") -> -amount
     Ok("R") -> amount
-    _ -> panic as "Unexpected move instruction"
+    _ -> 0
   }
 }
 ```
