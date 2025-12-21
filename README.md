@@ -88,7 +88,7 @@ def parseMoveDelta(text: String): Int =
   text.head match
     case 'L' => -amount
     case 'R' => amount
-    case _ => 1
+    case _ => 0
 
 def nextPosition(position: Int, delta: Int): Int =
   Math.floorMod(position + delta, DIAL_UPPER_BOUND)
@@ -278,7 +278,7 @@ fun parseClicks(text: String): Sequence<Int> {
         when (text.first()) {
             'L' -> -1
             'R' -> 1
-            else -> error("Unexpected move instruction")
+            else -> 0
         }
     val amount = text.drop(1).toInt()
     return generateSequence { direction }.take(amount)
