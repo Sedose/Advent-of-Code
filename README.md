@@ -139,30 +139,19 @@ private DialState nextDialState(DialState state, int delta, int dialUpperBound) 
 ##### Rust
 
 ```Rust
+use std::fs;
 use std::ops::Not;
-
-pub const INPUT: &str = r#"
-R22
-R26
-L20
-R20
----
-L12
-L35
-R50
-"#;
 
 const DIAL_UPPER_BOUND: i32 = 100;
 
 fn main() {
-    let password = INPUT.lines()
+    let password = fs::read_to_string("day1_part1.txt")
+        .unwrap_or("".to_string())
+        .lines()
         .map(str::trim)
         .filter(|line| line.is_empty().not())
         .map(parse_move_delta)
-        .scan(50, |position, delta| {
-            *position = (*position + delta).rem_euclid(DIAL_UPPER_BOUND);
-            Some(*position)
-        })
+        .scan(50, next_position)
         .filter(|position| *position == 0)
         .count();
 
@@ -178,6 +167,11 @@ fn parse_move_delta(text: &str) -> i32 {
         "R" => amount,
         _ => 0,
     }
+}
+
+fn next_position(position: &mut i32, delta: i32) -> Option<i32> {
+    *position = (*position + delta).rem_euclid(DIAL_UPPER_BOUND);
+    Some(*position)
 }
 ```
 
