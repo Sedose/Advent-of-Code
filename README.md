@@ -66,7 +66,7 @@ fun nextPosition(position: Int, delta: Int): Int =
 
 ##### Scala
 
-```Scala
+```Scala 3
 import scala.io.Source
 import scala.util.Using
 import scala.util.chaining.scalaUtilChainingOps
@@ -96,27 +96,25 @@ def nextPosition(position: Int, delta: Int): Int =
 
 ##### Java
 
-```Java
+```Java 25
 import static com.example.Input.INPUT;
-
-record DialState(int position, int zeroHits) {}
 
 void main() {
 
     int dialUpperBound = 100;
 
-    int password =
+    long password =
         INPUT.stripIndent()
             .lines()
             .map(String::trim)
             .filter(line -> !line.isEmpty())
             .map(this::parseMoveDelta)
-            .reduce(
-                new DialState(50, 0),
-                (state, delta) -> nextDialState(state, delta, dialUpperBound),
-                (_, right) -> right
-            )
-            .zeroHits();
+            .gather(Gatherers.scan(
+                () -> 50,
+                (position, delta) -> Math.floorMod(position + delta, dialUpperBound)
+            ))
+            .filter(it -> 0 == it)
+            .count();
 
     IO.println(password);
 }
@@ -128,12 +126,6 @@ private int parseMoveDelta(String text) {
         case 'R' -> amount;
         default -> 0;
     };
-}
-
-private DialState nextDialState(DialState state, int delta, int dialUpperBound) {
-    int position = Math.floorMod(state.position() + delta, dialUpperBound);
-    int zeroHits = state.zeroHits() + (position == 0 ? 1 : 0);
-    return new DialState(position, zeroHits);
 }
 ```
 
