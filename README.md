@@ -16,7 +16,7 @@ Single Markdown file holding my solutions for Advent of Code
 * **Minimal branching, maximal transformation**
 * **Clean, predictable control flow**
 * **Lean functional patterns**
-* **Less code means better. Code is dense**
+* **Less code means better. Keep code dense. Code is a liability, not an asset**
 * **The code is not opimized to gain maximum raw speed**
 * **The code is kept vertical, so it stays within a regular monitor size, no need for endless zooming, scroling nonsense**
 * **The code is opimized for correctness, simplicity and clarity**
