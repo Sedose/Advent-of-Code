@@ -231,39 +231,25 @@ fn parse_move_delta(text: String) -> Int {
 ##### Kotlin
 
 ```Kotlin
-const val input =
-"""
-R22
-L2
-R13
-L49
-...
-L7
-L12
-L35
-R50
-""".trimIndent()
-    .lines()
-    .map(String::trim)
-    .filter(String::isNotEmpty)
+private const val DIAL_UPPER_BOUND = 100
 
-const val dialUpperBound = 100
-
-const val initialPosition = 50
+private const val INITIAL_POSITION = 50
 
 fun main() {
-    input.let(::calculatePassword)
+    (
+        object {}.javaClass
+            .getResource("/day1_part1.txt")
+            ?.readText()
+            ?: error("Resource not found")
+        )
+        .lineSequence()
+        .map(String::trim)
+        .filter(String::isNotEmpty)
+        .flatMap(::parseClicks)
+        .scan(INITIAL_POSITION, ::nextPosition)
+        .count { it == 0 }
         .let(::println)
 }
-
-fun calculatePassword(input: List<String>): Int =
-    input.asSequence()
-        .flatMap(::parseClicks)
-        .scan(initialPosition) { position, delta ->
-            (position + delta).mod(dialUpperBound)
-        }
-        .count { it == 0 }
-
 
 fun parseClicks(text: String): Sequence<Int> {
     val direction =
@@ -275,6 +261,9 @@ fun parseClicks(text: String): Sequence<Int> {
     val amount = text.drop(1).toInt()
     return generateSequence { direction }.take(amount)
 }
+
+fun nextPosition(position: Int, delta: Int): Int =
+    (position + delta).mod(DIAL_UPPER_BOUND)
 ```
 
 ##### Gleam
