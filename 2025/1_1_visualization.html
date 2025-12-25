@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dial Rotation Visualizer (0..99)</title>
+  <style>
+    :root {
+      --bg: #0f1220;
+      --panel: #171a2b;
+      --panel2: #1e2240;
+      --text: #e8eaf6;
+      --muted: #aab0d6;
+      --accent: #7aa2ff;
+      --danger: #ff6b6b;
+      --ok: #5ce0a8;
+      --border: rgba(255,255,255,0.10);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      background: radial-gradient(1200px 800px at 20% 10%, #1b2150 0%, var(--bg) 55%);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 980px) {
+      .wrap { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--panel) 0%, #121528 100%);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card h2 {
+      margin: 0;
+      padding: 14px 14px 10px 14px;
+      font-size: 16px;
+      letter-spacing: 0.2px;
+      border-bottom: 1px solid var(--border);
+      color: #f2f3ff;
+    }
+
+    .card .body { padding: 14px; }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      resize: vertical;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #0d1022;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.35;
+      outline: none;
+    }
+
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .row + .row { margin-top: 10px; }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--panel2) 0%, #15183a 100%);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .btn:hover { border-color: rgba(255,255,255,0.22); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn.accent { border-color: rgba(122,162,255,0.45); }
+    .btn.danger { border-color: rgba(255,107,107,0.45); }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      min-width: 160px;
+    }
+    label { font-size: 12px; color: var(--muted); }
+    input[type="number"], input[type="range"] {
+      width: 100%;
+    }
+    input[type="number"] {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #0d1022;
+      color: var(--text);
+      font-family: var(--mono);
+      outline: none;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .stat {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      background: rgba(255,255,255,0.03);
+    }
+    .stat .k { font-size: 12px; color: var(--muted); }
+    .stat .v {
+      margin-top: 4px;
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .dialArea {
+      display: grid;
+      place-items: center;
+      padding: 14px;
+    }
+
+    svg { width: 100%; max-width: 520px; height: auto; }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.03);
+    }
+    .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      display: inline-block;
+    }
+
+    .log {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #0d1022;
+      padding: 10px;
+      max-height: 260px;
+      overflow: auto;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.35;
+      white-space: pre;
+    }
+
+    .lineHighlight {
+      border-left: 4px solid var(--accent);
+      padding-left: 8px;
+      margin-left: -12px;
+    }
+
+    .smallMuted { color: var(--muted); font-size: 12px; }
+    .good { color: var(--ok); }
+    .bad { color: var(--danger); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h2>Input & Controls</h2>
+      <div class="body">
+        <div class="row">
+          <div class="field" style="flex:1; min-width: 240px;">
+            <label for="input">Rotations (one per line, e.g. L68, R14)</label>
+            <textarea id="input" spellcheck="false">L68
+L30
+R48
+L5
+R60
+L55
+L1
+L99
+R14
+L82</textarea>
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn accent" id="load">Load</button>
+          <button class="btn" id="step">Step</button>
+          <button class="btn accent" id="run">Run</button>
+          <button class="btn danger" id="pause">Pause</button>
+          <button class="btn" id="reset">Reset</button>
+        </div>
+
+        <div class="row">
+          <div class="field" style="flex:1;">
+            <label for="speed">Speed (ms per step)</label>
+            <input id="speed" type="range" min="10" max="800" value="120" />
+            <div class="smallMuted"><span id="speedValue">120</span> ms</div>
+          </div>
+          <div class="field">
+            <label for="jumpTo">Jump to step index (0-based)</label>
+            <input id="jumpTo" type="number" value="0" min="0" />
+          </div>
+          <button class="btn" id="jump">Jump</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="k">Current position</div>
+            <div class="v" id="pos">50</div>
+          </div>
+          <div class="stat">
+            <div class="k">Times landed on 0</div>
+            <div class="v" id="hits">0</div>
+          </div>
+          <div class="stat">
+            <div class="k">Line index</div>
+            <div class="v" id="idx">-</div>
+          </div>
+          <div class="stat">
+            <div class="k">Last move</div>
+            <div class="v" id="last">-</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 12px;">
+          <div class="smallMuted">Step log</div>
+          <div class="log" id="log"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Dial</h2>
+      <div class="body dialArea">
+        <svg viewBox="0 0 520 520" role="img" aria-label="Dial 0 to 99">
+          <defs>
+            <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000" flood-opacity="0.35"/>
+            </filter>
+          </defs>
+
+          <!-- Outer ring -->
+          <circle cx="260" cy="260" r="220" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.10)" stroke-width="2" filter="url(#soft)"></circle>
+          <circle cx="260" cy="260" r="185" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" stroke-width="2"></circle>
+
+          <!-- Ticks group -->
+          <g id="ticks"></g>
+
+          <!-- Arrow (points to current) -->
+          <g id="arrow">
+            <polygon points="260,32 248,62 272,62" fill="rgba(122,162,255,0.95)"></polygon>
+            <circle cx="260" cy="260" r="10" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.12)"></circle>
+          </g>
+
+          <!-- Center readout -->
+          <circle cx="260" cy="260" r="120" fill="rgba(13,16,34,0.95)" stroke="rgba(255,255,255,0.12)"></circle>
+          <text x="260" y="250" text-anchor="middle" font-family="var(--mono)" font-size="48" fill="#e8eaf6" id="centerValue">50</text>
+          <text x="260" y="285" text-anchor="middle" font-family="var(--sans)" font-size="13" fill="#aab0d6" id="centerHint">position</text>
+
+          <!-- 0 marker highlight -->
+          <circle cx="260" cy="60" r="9" fill="rgba(255,107,107,0.75)" opacity="0.85"></circle>
+          <text x="260" y="44" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="#ffb3b3">0</text>
+        </svg>
+
+        <div class="legend">
+          <span class="pill"><span class="dot" style="background: var(--accent);"></span> arrow = current position</span>
+          <span class="pill"><span class="dot" style="background: var(--danger);"></span> top marker = 0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const dialUpperBound = 100;
+
+    const elements = {
+      input: document.getElementById('input'),
+      load: document.getElementById('load'),
+      step: document.getElementById('step'),
+      run: document.getElementById('run'),
+      pause: document.getElementById('pause'),
+      reset: document.getElementById('reset'),
+      jump: document.getElementById('jump'),
+      jumpTo: document.getElementById('jumpTo'),
+      speed: document.getElementById('speed'),
+      speedValue: document.getElementById('speedValue'),
+      pos: document.getElementById('pos'),
+      hits: document.getElementById('hits'),
+      idx: document.getElementById('idx'),
+      last: document.getElementById('last'),
+      log: document.getElementById('log'),
+      ticks: document.getElementById('ticks'),
+      arrow: document.getElementById('arrow'),
+      centerValue: document.getElementById('centerValue'),
+    };
+
+    function floorMod(value, mod) {
+      return ((value % mod) + mod) % mod;
+    }
+
+    function parseMoveDelta(text) {
+      const trimmed = text.trim();
+      if (!trimmed) return null;
+      const dir = trimmed[0];
+      const amount = Number.parseInt(trimmed.slice(1), 10);
+      if (!Number.isFinite(amount)) return null;
+      if (dir === 'L') return -amount;
+      if (dir === 'R') return amount;
+      return null;
+    }
+
+    function normalizeLines(text) {
+      return text
+        .split(/\r?\n/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+    }
+
+    function angleForPosition(position) {
+      // 0 is at top. Increasing positions go clockwise (R).
+      const fraction = position / dialUpperBound;
+      return fraction * 360;
+    }
+
+    function setArrow(position) {
+      const angle = angleForPosition(position);
+      elements.arrow.setAttribute('transform', `rotate(${angle} 260 260)`);
+      elements.centerValue.textContent = String(position);
+    }
+
+    function setStats(state) {
+      elements.pos.textContent = String(state.position);
+      elements.hits.textContent = String(state.hitsOnZero);
+      elements.idx.textContent = state.currentLineIndex === null ? '-' : String(state.currentLineIndex);
+      elements.last.textContent = state.lastMoveText ?? '-';
+      setArrow(state.position);
+
+      if (state.position === 0) {
+        elements.pos.classList.add('bad');
+      } else {
+        elements.pos.classList.remove('bad');
+      }
+    }
+
+    function appendLogLine(text, highlight = false) {
+      const line = highlight ? `> ${text}` : `  ${text}`;
+      elements.log.textContent += (elements.log.textContent ? "\n" : "") + line;
+      elements.log.scrollTop = elements.log.scrollHeight;
+    }
+
+    function resetLog() {
+      elements.log.textContent = "";
+    }
+
+    function buildTicks() {
+      const g = elements.ticks;
+      g.innerHTML = "";
+
+      // Major ticks every 5, labels every 10.
+      for (let i = 0; i < dialUpperBound; i++) {
+        const angle = angleForPosition(i);
+        const isMajor = (i % 5 === 0);
+        const isLabel = (i % 10 === 0);
+
+        const inner = isMajor ? 175 : 182;
+        const outer = 205;
+
+        const rad = (Math.PI / 180) * (angle - 90); // rotate so 0 is at top
+        const x1 = 260 + Math.cos(rad) * inner;
+        const y1 = 260 + Math.sin(rad) * inner;
+        const x2 = 260 + Math.cos(rad) * outer;
+        const y2 = 260 + Math.sin(rad) * outer;
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", x1);
+        line.setAttribute("y1", y1);
+        line.setAttribute("x2", x2);
+        line.setAttribute("y2", y2);
+        line.setAttribute("stroke", "rgba(255,255,255,0.20)");
+        line.setAttribute("stroke-width", isMajor ? "2" : "1");
+        g.appendChild(line);
+
+        if (isLabel) {
+          const labelRadius = 150;
+          const lx = 260 + Math.cos(rad) * labelRadius;
+          const ly = 260 + Math.sin(rad) * labelRadius;
+
+          const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          t.setAttribute("x", lx);
+          t.setAttribute("y", ly + 4);
+          t.setAttribute("text-anchor", "middle");
+          t.setAttribute("font-family", "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace");
+          t.setAttribute("font-size", "12");
+          t.setAttribute("fill", "rgba(232,234,246,0.75)");
+          t.textContent = String(i);
+          g.appendChild(t);
+        }
+      }
+    }
+
+    function createInitialState(lines) {
+      return {
+        lines,
+        position: 50,
+        hitsOnZero: 0,
+        nextIndex: 0,
+        currentLineIndex: null,
+        lastMoveText: null
+      };
+    }
+
+    let state = createInitialState([]);
+    let timerId = null;
+
+    function stopRunning() {
+      if (timerId !== null) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+    }
+
+    function loadInput() {
+      stopRunning();
+      const lines = normalizeLines(elements.input.value);
+      state = createInitialState(lines);
+      resetLog();
+      appendLogLine(`Loaded ${lines.length} lines. Start at 50.`);
+      setStats(state);
+      elements.jumpTo.max = String(Math.max(0, lines.length));
+    }
+
+    function stepOnce() {
+      if (state.nextIndex >= state.lines.length) {
+        appendLogLine(`End of input. Password = hitsOnZero = ${state.hitsOnZero}.`, true);
+        stopRunning();
+        return false;
+      }
+
+      const lineIndex = state.nextIndex;
+      const moveText = state.lines[lineIndex];
+      const delta = parseMoveDelta(moveText);
+
+      if (delta === null) {
+        appendLogLine(`Line ${lineIndex}: "${moveText}" is invalid. Skipped.`, true);
+        state.currentLineIndex = lineIndex;
+        state.lastMoveText = `INVALID`;
+        state.nextIndex += 1;
+        setStats(state);
+        return true;
+      }
+
+      const before = state.position;
+      const after = floorMod(before + delta, dialUpperBound);
+
+      state.position = after;
+      state.currentLineIndex = lineIndex;
+      state.lastMoveText = moveText;
+      state.nextIndex += 1;
+
+      const hitZero = (after === 0);
+      if (hitZero) state.hitsOnZero += 1;
+
+      const sign = delta >= 0 ? `+${delta}` : `${delta}`;
+      const msg = `Line ${lineIndex}: ${moveText} (delta ${sign}) -> ${before} => ${after}` + (hitZero ? `  [HIT 0 #${state.hitsOnZero}]` : ``);
+      appendLogLine(msg, hitZero);
+
+      setStats(state);
+      return true;
+    }
+
+    function run() {
+      stopRunning();
+      const speedMs = Number(elements.speed.value);
+      timerId = setInterval(() => {
+        const ok = stepOnce();
+        if (!ok) stopRunning();
+      }, speedMs);
+    }
+
+    function reset() {
+      stopRunning();
+      state.position = 50;
+      state.hitsOnZero = 0;
+      state.nextIndex = 0;
+      state.currentLineIndex = null;
+      state.lastMoveText = null;
+      resetLog();
+      appendLogLine(`Reset. Start at 50.`);
+      setStats(state);
+    }
+
+    function jumpTo(index) {
+      stopRunning();
+      const target = Math.max(0, Math.min(index, state.lines.length));
+      state.position = 50;
+      state.hitsOnZero = 0;
+      state.nextIndex = 0;
+      state.currentLineIndex = null;
+      state.lastMoveText = null;
+      resetLog();
+      appendLogLine(`Jump requested: rebuild state to step ${target}.`);
+
+      while (state.nextIndex < target) {
+        const ok = stepOnce();
+        if (!ok) break;
+      }
+      appendLogLine(`Now at step ${state.nextIndex}/${state.lines.length}. Position=${state.position}, hitsOnZero=${state.hitsOnZero}.`, true);
+      setStats(state);
+    }
+
+    elements.load.addEventListener('click', loadInput);
+    elements.step.addEventListener('click', () => stepOnce());
+    elements.run.addEventListener('click', run);
+    elements.pause.addEventListener('click', stopRunning);
+    elements.reset.addEventListener('click', reset);
+    elements.jump.addEventListener('click', () => jumpTo(Number(elements.jumpTo.value)));
+
+    elements.speed.addEventListener('input', () => {
+      elements.speedValue.textContent = String(elements.speed.value);
+      if (timerId !== null) run();
+    });
+
+    buildTicks();
+    loadInput();
+  </script>
+</body>
+</html>
